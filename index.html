@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Игра Ним (макс. 3 камня за ход)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .heap {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f0f8ff;
+      border-left: 4px solid #4a90e2;
+      font-size: 18px;
+    }
+    .stones {
+      margin-top: 5px;
+      font-size: 24px;
+      color: #555;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .active {
+      background-color: #4a90e2;
+      color: white;
+    }
+    #message {
+      font-weight: bold;
+      margin: 15px 0;
+      min-height: 24px;
+      color: #c00;
+    }
+    input, select {
+      padding: 6px;
+      margin: 5px;
+      font-size: 16px;
+      width: 80px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Игра Ним (макс. 3 камня за ход)</h1>
+
+  <!-- Этап 1: Настройка игры -->
+  <div id="setup" class="section">
+    <h2>Настройка игры</h2>
+    <label>Количество кучек: 
+      <input type="number" id="numHeaps" min="1" max="10" value="3">
+    </label><br><br>
+    
+    <div id="heapInputs"></div>
+    
+    <button onclick="setupHeaps()">Создать кучки</button>
+  </div>
+
+  <!-- Этап 2: Игровое поле -->
+  <div id="game" class="section hidden">
+    <h2 id="turnDisplay">Ход игрока 1</h2>
+    <div id="heapsDisplay"></div>
+    <div id="message"></div>
+    <div id="moveControls" class="hidden">
+      <p>Выберите кучку и количество камней (1–3):</p>
+      <label>Кучка: 
+        <select id="heapSelect"></select>
+      </label>
+      <label>Камней: 
+        <select id="takeSelect">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </label>
+      <br><br>
+      <button onclick="makeMove()">Сделать ход</button>
+    </div>
+  </div>
+
+  <script>
+    let heaps = [];
+    let currentPlayer = 1;
+
+    // Генерация полей ввода для кучек
+    document.getElementById('numHeaps').addEventListener('input', function() {
+      const num = parseInt(this.value) || 1;
+      const container = document.getElementById('heapInputs');
+      container.innerHTML = '';
+      for (let i = 1; i <= num; i++) {
+        container.innerHTML += `<label>Кучка ${i}: <input type="number" id="heap${i}" min="1" max="20" value="5"></label><br>`;
+      }
+    });
+
+    // Инициализация: сгенерировать поля при загрузке
+    window.onload = () => {
+      document.getElementById('numHeaps').dispatchEvent(new Event('input'));
+    };
+
+    function setupHeaps() {
+      const num = parseInt(document.getElementById('numHeaps').value) || 1;
+      heaps = [];
+      for (let i = 1; i <= num; i++) {
+        const val = parseInt(document.getElementById(`heap${i}`).value) || 1;
+        heaps.push(Math.max(1, val));
+      }
+
+      // Переключаем на игровой экран
+      document.getElementById('setup').classList.add('hidden');
+      document.getElementById('game').classList.remove('hidden');
+      currentPlayer = 1;
+      renderGame();
+    }
+
+    function renderGame() {
+      const display = document.getElementById('heapsDisplay');
+      display.innerHTML = '';
+
+      let nonEmptyCount = 0;
+      for (let i = 0; i < heaps.length; i++) {
+        if (heaps[i] > 0) nonEmptyCount++;
+        const div = document.createElement('div');
+        div.className = 'heap';
+        div.innerHTML = `
+          <strong>Кучка ${i + 1}:</strong>
+          <div class="stones">${'●'.repeat(heaps[i])}</div>
+          <em>(${heaps[i]} камней)</em>
+        `;
+        display.appendChild(div);
+      }
+
+      document.getElementById('turnDisplay').textContent = `Ход игрока ${currentPlayer}`;
+
+      // Если есть хотя бы одна непустая кучка — показываем управление
+      if (nonEmptyCount > 0) {
+        updateMoveControls();
+        document.getElementById('moveControls').classList.remove('hidden');
+        document.getElementById('message').textContent = '';
+      } else {
+        // Игра окончена
+        const winner = currentPlayer === 1 ? 2 : 1;
+        document.getElementById('message').textContent = `Игрок ${winner} победил! 🎉`;
+        document.getElementById('moveControls').classList.add('hidden');
+      }
+    }
+
+    function updateMoveControls() {
+      const heapSelect = document.getElementById('heapSelect');
+      heapSelect.innerHTML = '';
+      for (let i = 0; i < heaps.length; i++) {
+        if (heaps[i] > 0) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = `Кучка ${i + 1} (${heaps[i]} камней)`;
+          heapSelect.appendChild(opt);
+        }
+      }
+
+      // Обновляем возможные значения "сколько взять"
+      const takeSelect = document.getElementById('takeSelect');
+      const selectedHeapIndex = parseInt(heapSelect.value);
+      const maxTake = Math.min(3, heaps[selectedHeapIndex] || 1);
+      takeSelect.innerHTML = '';
+      for (let t = 1; t <= maxTake; t++) {
+        takeSelect.innerHTML += `<option value="${t}">${t}</option>`;
+      }
+    }
+
+    function makeMove() {
+      const heapSelect = document.getElementById('heapSelect');
+      const takeSelect = document.getElementById('takeSelect');
+
+      if (heapSelect.options.length === 0) {
+        document.getElementById('message').textContent = 'Нет доступных кучек!';
+        return;
+      }
+
+      const heapIndex = parseInt(heapSelect.value);
+      const take = parseInt(takeSelect.value);
+
+      if (take < 1 || take > 3 || take > heaps[heapIndex]) {
+        document.getElementById('message').textContent = 'Недопустимый ход!';
+        return;
+      }
+
+      heaps[heapIndex] -= take;
+      currentPlayer = currentPlayer === 1 ? 2 : 1;
+      renderGame();
+    }
+
+    // Обновляем варианты "сколько взять" при смене кучки
+    document.getElementById('heapSelect')?.addEventListener('change', updateTakeOptions);
+
+    function updateTakeOptions() {
+      const heapSelect = document.getElementById('heapSelect');
+      const takeSelect = document.getElementById('takeSelect');
+      if (!heapSelect || !takeSelect) return;
+
+      const heapIndex = parseInt(heapSelect.value);
+      const maxTake = Math.min(3, heaps[heapIndex] || 1);
+      takeSelect.innerHTML = '';
+      for (let t = 1; t <= maxTake; t++) {
+        takeSelect.innerHTML += `<option value="${t}">${t}</option>`;
+      }
+    }
+  </script>
+</body>
+</html>
