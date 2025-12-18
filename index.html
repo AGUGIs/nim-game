@@ -611,13 +611,22 @@
         }
         document.getElementById('message').textContent = '';
       } else {
-        // Победа
+        // Определяем победителя и формируем сообщение
         const winner = currentPlayer === 1 ? 2 : 1;
-        const winnerName = gameMode === 'ai' 
-          ? (winner === 1 ? 'Маг' : 'ИИ') 
-          : `Маг ${winner}`;
-        document.getElementById('message').textContent = `🌟 ${winnerName} одержал победу! 🌟`;
-
+        let message = '';
+      
+        if (gameMode === 'ai') {
+          if (winner === 1) {
+            message = '🌟 Вы победили! Магия — в ваших руках! 🌟';
+          } else {
+            message = '💀 Вы проиграли... ИИ слишком силён. 💀';
+          }
+        } else {
+          message = `🌟 Маг ${winner} одержал победу! 🌟`;
+        }
+      
+        document.getElementById('message').textContent = message;
+        
         if (winner === 1) stats.winsP1++; else stats.winsP2++;
         saveStats();
 
