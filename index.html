@@ -3,15 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>✧ Магический Ним ✧</title>
+  <title>🔮 Хроники Кристаллов: Битва Магов</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Almendra+Display&display=swap" rel="stylesheet">
   <style>
+    /* ====== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ТЕМ ====== */
     :root {
-      --bg-dark: #0b0b1a;
-      --purple-glow: #8a2be2;
-      --blue-glow: #00b4d8;
+      --bg: #0c0b1f;
+      --fg: #e0e0ff;
+      --accent: #b967ff;
       --gold: #ffd700;
-      --text-gold: #ffecb3;
+      --crystal: #00f7ff;
+      --shadow: 0 0 20px rgba(185, 103, 255, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg: #f9f5eb;
+      --fg: #2c1e3c;
+      --accent: #6a5acd;
+      --gold: #d4af37;
+      --crystal: #4b0082;
+      --shadow: 0 0 15px rgba(106, 90, 205, 0.4);
+    }
+
+    [data-theme="rainbow"] {
+      --bg: #000;
+      background: linear-gradient(135deg, #ff00cc, #3333ff, #00ccff, #00ffcc, #ccff00, #ff9900) !important;
+      animation: bgRainbow 20s infinite linear;
+    }
+
+    @keyframes bgRainbow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     * {
@@ -21,12 +43,43 @@
     }
 
     body {
-      background: var(--bg-dark) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230b0b1a"/><path d="M0 0L100 100M100 0L0 100" stroke="%23220033" stroke-width="0.5" opacity="0.3"/></svg>');
-      color: var(--text-gold);
+      background-color: var(--bg);
+      color: var(--fg);
       font-family: 'Cinzel', serif;
       min-height: 100vh;
-      padding: 20px;
+      padding: 15px;
       overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(185, 103, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(0, 247, 255, 0.05) 0%, transparent 40%);
+      z-index: -1;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--dur) infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
     }
 
     .container {
@@ -37,97 +90,103 @@
 
     h1 {
       text-align: center;
-      font-size: 3.2rem;
+      font-size: 2.8rem;
       margin: 20px 0;
-      text-shadow: 0 0 15px var(--purple-glow), 0 0 30px rgba(138, 43, 226, 0.6);
-      letter-spacing: 3px;
-      font-weight: 900;
-      background: linear-gradient(to right, #ffecb3, #ffd700, #ffecb3);
+      text-shadow: 0 0 15px var(--accent);
+      background: linear-gradient(to right, var(--gold), var(--crystal), var(--gold));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      font-weight: 900;
+      letter-spacing: 2px;
     }
 
     .panel {
-      background: rgba(15, 10, 30, 0.75);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(138, 43, 226, 0.5);
-      border-radius: 20px;
+      background: rgba(20, 15, 40, 0.7);
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--accent);
+      border-radius: 24px;
       padding: 25px;
-      margin: 25px 0;
-      box-shadow:
-        0 0 25px rgba(138, 43, 226, 0.4),
-        inset 0 0 15px rgba(0, 0, 0, 0.5);
+      margin: 20px 0;
+      box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
+    }
+
+    [data-theme="light"] .panel {
+      background: rgba(255, 250, 240, 0.85);
+      border-color: var(--accent);
     }
 
     .panel::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; height: 4px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      background: linear-gradient(90deg, transparent, var(--gold), var(--crystal), var(--gold), transparent);
     }
 
     .section-title {
       font-family: 'Almendra Display', cursive;
       font-size: 2rem;
+      text-align: center;
       margin-bottom: 20px;
       color: var(--gold);
-      text-align: center;
     }
 
     /* SETUP */
-    .setup-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-      margin-bottom: 20px;
+    .setup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
     }
 
-    .setup-input {
+    .setup-item {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
     label {
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-size: 1.1rem;
       color: #ccc;
     }
 
     input, select, button {
-      background: rgba(30, 20, 50, 0.8);
-      border: 1px solid var(--blue-glow);
+      background: rgba(30, 20, 60, 0.8);
+      border: 1px solid var(--accent);
       color: white;
       padding: 10px 15px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 1.1rem;
       outline: none;
-      transition: all 0.3s ease;
+      width: 100%;
+      text-align: center;
     }
 
-    input:focus, select:focus {
-      box-shadow: 0 0 12px var(--blue-glow);
+    [data-theme="light"] input,
+    [data-theme="light"] select,
+    [data-theme="light"] button {
+      background: white;
+      color: var(--fg);
     }
 
     button {
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      background: linear-gradient(135deg, #8a2be2, #00bfff);
       border: none;
       color: white;
       font-weight: bold;
       cursor: pointer;
       letter-spacing: 1px;
-      text-transform: uppercase;
       position: relative;
       overflow: hidden;
+      transition: transform 0.2s;
     }
 
     button:hover {
-      box-shadow: 0 0 20px rgba(37, 117, 252, 0.8);
-      transform: translateY(-2px);
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
     }
 
     /* HEAPS */
@@ -135,38 +194,47 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 30px;
-      margin-top: 20px;
+      gap: 25px;
+      margin: 25px 0;
     }
 
     .heap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 120px;
     }
 
     .flask {
       position: relative;
-      width: 80px;
-      height: 120px;
-      background: rgba(20, 10, 40, 0.6);
+      width: 90px;
+      height: 140px;
+      background: rgba(10, 5, 30, 0.6);
       border: 3px solid var(--gold);
-      border-radius: 0 0 40px 40px;
+      border-radius: 0 0 45px 45px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       align-items: center;
-      padding-bottom: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      padding-bottom: 15px;
+      animation: breathe 6s infinite ease-in-out;
+    }
+
+    [data-theme="light"] .flask {
+      background: rgba(255, 250, 240, 0.9);
+      border-color: var(--gold);
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
     }
 
     .flask::before {
       content: '';
       position: absolute;
-      top: -20px;
-      width: 40px;
-      height: 20px;
+      top: -25px;
+      width: 45px;
+      height: 22px;
       background: var(--gold);
       border-radius: 50%;
     }
@@ -175,141 +243,308 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
+      height: 100px;
+      overflow: hidden;
     }
 
     .crystal {
-      font-size: 24px;
-        /* Мерцающий кристалл */
-      animation: shimmer 3s infinite alternate;
+      font-size: 26px;
+      opacity: 0;
+      animation: appear 0.4s forwards;
     }
 
-    @keyframes shimmer {
-      0% { opacity: 0.7; transform: scale(1); }
-      100% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 10px var(--blue-glow); }
+    @keyframes appear {
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .heap-label {
-      margin-top: 10px;
-      font-size: 1.1rem;
+      margin-top: 12px;
+      font-size: 1.2rem;
       color: var(--gold);
     }
 
-    /* MOVE CONTROLS */
-    .move-controls {
-      text-align: center;
-      margin-top: 30px;
-    }
-
+    /* CONTROLS */
     .controls-row {
       display: flex;
       justify-content: center;
       gap: 20px;
-      margin-top: 15px;
       flex-wrap: wrap;
+      margin: 20px 0;
     }
 
     #message {
       text-align: center;
-      min-height: 28px;
-      margin: 15px 0;
-      font-size: 1.3rem;
+      min-height: 32px;
+      margin: 20px 0;
+      font-size: 1.4rem;
       font-weight: bold;
-      color: #ff6b6b;
-      text-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+      color: #ff6b9d;
+      text-shadow: 0 0 10px rgba(255, 107, 157, 0.6);
     }
 
     #turnDisplay {
       text-align: center;
-      font-size: 1.8rem;
+      font-size: 2rem;
       margin: 15px 0;
       color: var(--gold);
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
     }
 
-    .hidden {
-      display: none !important;
+    .hidden { display: none !important; }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #aaa;
     }
 
-    /* Анимация удаления */
-    @keyframes dissolve {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(0.5); opacity: 0; }
+    /* PARTICLES */
+    .particles {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 100;
     }
 
-    .dissolve {
-      animation: dissolve 0.6s forwards;
+    .particle {
+      position: absolute;
+      font-size: 20px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* SETTINGS */
+    .settings-bar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .theme-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid white;
+    }
+
+    #dark-theme { background: #0c0b1f; }
+    #light-theme { background: #f9f5eb; }
+    #rainbow-theme { background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
+
+    .win-effect {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 200;
+      opacity: 0;
     }
   </style>
 </head>
 <body>
+  <div class="stars" id="stars"></div>
+  <div class="particles" id="particles"></div>
+  <div class="win-effect" id="winEffect"></div>
+
   <div class="container">
-    <h1>✧ Магический Ним ✧</h1>
+    <h1>🔮 Хроники Кристаллов: Битва Магов</h1>
+
+    <!-- Настройки темы и звука -->
+    <div class="settings-bar">
+      <div title="Тёмная магия">
+        <div class="theme-btn" id="dark-theme" onclick="setTheme('dark')"></div>
+      </div>
+      <div title="Светлая алхимия">
+        <div class="theme-btn" id="light-theme" onclick="setTheme('light')"></div>
+      </div>
+      <div title="Радужная аркана">
+        <div class="theme-btn" id="rainbow-theme" onclick="setTheme('rainbow')"></div>
+      </div>
+      <button id="soundToggle" onclick="toggleSound()">🔊 Звук: Вкл</button>
+    </div>
+
+    <!-- Статистика -->
+    <div class="panel">
+      <div class="stats">
+        <div>Игр сыграно: <span id="gamesPlayed">0</span></div>
+        <div>Побед Игрок 1: <span id="winsP1">0</span></div>
+        <div>Побед Игрок 2 / ИИ: <span id="winsP2">0</span></div>
+      </div>
+    </div>
 
     <!-- Настройка -->
     <div id="setup" class="panel">
-      <div class="section-title">Алхимическая настройка</div>
-      <div class="setup-controls">
-        <div class="setup-input">
+      <div class="section-title">Создание магического круга</div>
+      <div class="setup-grid">
+        <div class="setup-item">
+          <label>Режим:</label>
+          <select id="gameMode">
+            <option value="pvp">2 Мага</option>
+            <option value="ai">Против ИИ</option>
+          </select>
+        </div>
+        <div class="setup-item">
+          <label>Сложность ИИ:</label>
+          <select id="aiLevel">
+            <option value="easy">Ученик</option>
+            <option value="medium" selected>Маг</option>
+            <option value="hard">Архимаг</option>
+          </select>
+        </div>
+        <div class="setup-item">
           <label>Колбы (1–10):</label>
-          <input type="number" id="numHeaps" min="1" max="10" value="3">
+          <input type="number" id="numHeaps" min="1" max="10" value="4">
         </div>
         <div id="heapInputs"></div>
       </div>
-      <div style="text-align: center; margin-top: 20px;">
+      <div style="text-align: center;">
         <button onclick="setupHeaps()">Начать ритуал</button>
       </div>
     </div>
 
     <!-- Игровое поле -->
     <div id="game" class="panel hidden">
-      <div class="section-title">Великий обряд Нима</div>
-      <div id="turnDisplay">Ход алхимика 1</div>
+      <div class="section-title">Битва магов</div>
+      <div id="turnDisplay">Ход мага 1</div>
       <div class="heaps-container" id="heapsDisplay"></div>
       <div id="message"></div>
 
-      <div id="moveControls" class="move-controls hidden">
-        <div class="controls-row">
-          <div>
-            <label>Выберите колбу:</label>
-            <select id="heapSelect"></select>
-          </div>
-          <div>
-            <label>Кристаллы (1–3):</label>
-            <select id="takeSelect">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-            </select>
-          </div>
+      <div id="moveControls" class="controls-row hidden">
+        <div>
+          <label>Выберите колбу:</label>
+          <select id="heapSelect"></select>
         </div>
-        <button onclick="makeMove()">Извлечь кристаллы</button>
+        <div>
+          <label>Кристаллы (1–3):</label>
+          <select id="takeSelect">
+            <option>1</option><option>2</option><option>3</option>
+          </select>
+        </div>
+        <div style="align-self: flex-end;">
+          <button onclick="makeMove()">Извлечь</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
+    // ====== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ======
     let heaps = [];
     let currentPlayer = 1;
+    let gameMode = 'pvp'; // 'pvp' или 'ai'
+    let aiLevel = 'medium';
+    let stats = {
+      games: 0,
+      winsP1: 0,
+      winsP2: 0
+    };
+    let soundEnabled = true;
+    let gameActive = false;
 
-    // Генерация полей ввода при изменении числа колб
+    // ====== АУДИО (Base64) ======
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, dur = 0.2) {
+      if (!soundEnabled) return;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.frequency.value = freq;
+      gain.gain.value = 0.1;
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + dur);
+      osc.stop(audioContext.currentTime + dur);
+    }
+
+    function playCrystalSound() { playTone(880, 0.15); }
+    function playWinSound() {
+      [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.3), i * 200));
+    }
+
+    // ====== ИНИЦИАЛИЗАЦИЯ ======
+    function initStars() {
+      const stars = document.getElementById('stars');
+      for (let i = 0; i < 150; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.width = `${Math.random() * 3}px`;
+        star.style.height = star.style.width;
+        star.style.setProperty('--dur', `${2 + Math.random() * 5}s`);
+        stars.appendChild(star);
+      }
+    }
+
+    // ====== ТЕМЫ ======
+    function setTheme(theme) {
+      document.body.setAttribute('data-theme', theme === 'rainbow' ? 'rainbow' : '');
+      if (theme !== 'rainbow') {
+        document.body.style.background = '';
+      }
+      localStorage.setItem('nim-theme', theme);
+    }
+
+    // ====== ЗВУК ======
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundToggle').textContent = soundEnabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+      localStorage.setItem('nim-sound', soundEnabled);
+    }
+
+    // ====== НАСТРОЙКА ИГРЫ ======
     document.getElementById('numHeaps').addEventListener('input', function () {
       const num = Math.min(10, Math.max(1, parseInt(this.value) || 1));
       const container = document.getElementById('heapInputs');
       container.innerHTML = '';
       for (let i = 1; i <= num; i++) {
-        const input = document.createElement('div');
-        input.className = 'setup-input';
-        input.innerHTML = `<label>Колба ${i}:</label><input type="number" id="heap${i}" min="1" max="20" value="5">`;
-        container.appendChild(input);
+        const div = document.createElement('div');
+        div.className = 'setup-item';
+        div.innerHTML = `<label>Колба ${i}:</label><input type="number" id="heap${i}" min="1" max="20" value="5">`;
+        container.appendChild(div);
       }
     });
 
     window.onload = () => {
+      initStars();
       document.getElementById('numHeaps').dispatchEvent(new Event('input'));
+      const savedTheme = localStorage.getItem('nim-theme') || 'dark';
+      const savedSound = localStorage.getItem('nim-sound') !== 'false';
+      setTheme(savedTheme);
+      soundEnabled = savedSound;
+      document.getElementById('soundToggle').textContent = soundEnabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+      loadStats();
     };
 
+    function loadStats() {
+      const saved = localStorage.getItem('nim-stats');
+      if (saved) stats = JSON.parse(saved);
+      updateStats();
+    }
+
+    function saveStats() {
+      localStorage.setItem('nim-stats', JSON.stringify(stats));
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById('gamesPlayed').textContent = stats.games;
+      document.getElementById('winsP1').textContent = stats.winsP1;
+      document.getElementById('winsP2').textContent = stats.winsP2;
+    }
+
+    // ====== ЗАПУСК ИГРЫ ======
     function setupHeaps() {
+      gameMode = document.getElementById('gameMode').value;
+      aiLevel = document.getElementById('aiLevel').value;
       const num = parseInt(document.getElementById('numHeaps').value) || 1;
       heaps = [];
       for (let i = 1; i <= num; i++) {
@@ -317,12 +552,21 @@
         heaps.push(Math.max(1, Math.min(20, val)));
       }
 
+      stats.games++;
+      saveStats();
+
       document.getElementById('setup').classList.add('hidden');
       document.getElementById('game').classList.remove('hidden');
       currentPlayer = 1;
+      gameActive = true;
       renderGame();
+
+      if (gameMode === 'ai' && currentPlayer === 2) {
+        setTimeout(aiMove, 1000);
+      }
     }
 
+    // ====== ОТОБРАЖЕНИЕ ======
     function renderGame() {
       const display = document.getElementById('heapsDisplay');
       display.innerHTML = '';
@@ -340,6 +584,7 @@
           const crystal = document.createElement('div');
           crystal.className = 'crystal';
           crystal.textContent = '✦';
+          crystal.style.animationDelay = `${j * 0.05}s`;
           crystalsDiv.appendChild(crystal);
         }
 
@@ -352,16 +597,40 @@
         display.appendChild(heapDiv);
       }
 
-      document.getElementById('turnDisplay').textContent = `Ход алхимика ${currentPlayer}`;
+      const playerName = gameMode === 'ai' 
+        ? (currentPlayer === 1 ? 'Маг' : 'ИИ') 
+        : `Маг ${currentPlayer}`;
+      document.getElementById('turnDisplay').textContent = `Ход ${playerName}`;
 
       if (nonEmpty) {
-        updateMoveControls();
-        document.getElementById('moveControls').classList.remove('hidden');
+        if (gameMode === 'pvp' || currentPlayer === 1) {
+          updateMoveControls();
+          document.getElementById('moveControls').classList.remove('hidden');
+        } else {
+          document.getElementById('moveControls').classList.add('hidden');
+        }
         document.getElementById('message').textContent = '';
       } else {
+        // Победа
         const winner = currentPlayer === 1 ? 2 : 1;
-        document.getElementById('message').textContent = `✨ Алхимик ${winner} завершил ритуал! Победа! ✨`;
+        const winnerName = gameMode === 'ai' 
+          ? (winner === 1 ? 'Маг' : 'ИИ') 
+          : `Маг ${winner}`;
+        document.getElementById('message').textContent = `🌟 ${winnerName} одержал победу! 🌟`;
+
+        if (winner === 1) stats.winsP1++; else stats.winsP2++;
+        saveStats();
+
+        gameActive = false;
+        playWinSound();
+        showWinEffect();
         document.getElementById('moveControls').classList.add('hidden');
+        setTimeout(() => {
+          if (confirm('Начать новую игру?')) {
+            document.getElementById('game').classList.add('hidden');
+            document.getElementById('setup').classList.remove('hidden');
+          }
+        }, 2000);
       }
     }
 
@@ -372,18 +641,17 @@
         if (heaps[i] > 0) {
           const opt = document.createElement('option');
           opt.value = i;
-          opt.textContent = `Колба ${i + 1} (${heaps[i]} кр.)`;
+          opt.textContent = `Колба ${i + 1} (${heaps[i]})`;
           heapSelect.appendChild(opt);
         }
       }
-
       updateTakeOptions();
     }
 
     function updateTakeOptions() {
       const heapSelect = document.getElementById('heapSelect');
       const takeSelect = document.getElementById('takeSelect');
-      if (!heapSelect.value && heapSelect.options.length === 0) return;
+      if (heapSelect.options.length === 0) return;
 
       const idx = parseInt(heapSelect.value);
       const max = Math.min(3, heaps[idx]);
@@ -393,7 +661,9 @@
       }
     }
 
+    // ====== ХОД ИГРОКА ======
     function makeMove() {
+      if (!gameActive) return;
       const heapSelect = document.getElementById('heapSelect');
       const takeSelect = document.getElementById('takeSelect');
 
@@ -406,28 +676,130 @@
       const take = parseInt(takeSelect.value);
 
       if (take < 1 || take > 3 || take > heaps[heapIdx]) {
-        document.getElementById('message').textContent = 'Невозможный ритуал!';
+        document.getElementById('message').textContent = 'Недопустимый ритуал!';
         return;
       }
 
-      // Анимация: удаляем последние N кристаллов с эффектом
-      const heapEl = document.querySelectorAll('.heap')[heapIdx];
-      const crystalEls = heapEl.querySelectorAll('.crystal');
-      for (let i = 0; i < take; i++) {
-        if (crystalEls[i]) {
-          crystalEls[i].classList.add('dissolve');
-        }
-      }
+      createParticles(heapIdx, take);
+      playCrystalSound();
 
       heaps[heapIdx] -= take;
       currentPlayer = currentPlayer === 1 ? 2 : 1;
 
-      // Ждём анимацию перед обновлением
-      setTimeout(renderGame, 600);
+      setTimeout(renderGame, 500);
+
+      if (gameMode === 'ai' && currentPlayer === 2 && gameActive) {
+        setTimeout(aiMove, 1200);
+      }
     }
 
-    // Обновляем "сколько взять" при смене колбы
+    // ====== ИИ ======
+    function aiMove() {
+      if (!gameActive) return;
+
+      let heapIdx = -1, take = 1;
+
+      // Простая стратегия: если можно выиграть — выиграть, иначе случайно
+      const nonEmpty = heaps.map((h, i) => h > 0 ? i : -1).filter(i => i !== -1);
+      if (nonEmpty.length === 0) return;
+
+      // Попытка найти ход, после которого останется 0 кристаллов
+      for (const i of nonEmpty) {
+        if (heaps[i] <= 3) {
+          heapIdx = i;
+          take = heaps[i];
+          break;
+        }
+      }
+
+      // Если не нашли — случайный ход (с уклоном к "умному" поведению на высоком уровне)
+      if (heapIdx === -1) {
+        heapIdx = nonEmpty[Math.floor(Math.random() * nonEmpty.length)];
+        take = Math.min(3, heaps[heapIdx]);
+        if (aiLevel === 'hard') {
+          // Пытаемся оставить кратно 4 (базовая стратегия 1-3 Nim)
+          const remainder = heaps[heapIdx] % 4;
+          if (remainder !== 0) {
+            take = remainder;
+          } else {
+            take = Math.min(3, heaps[heapIdx]);
+          }
+        } else if (aiLevel === 'medium') {
+          // Иногда делает оптимальный ход
+          if (Math.random() > 0.4) {
+            take = Math.min(3, heaps[heapIdx]);
+          }
+        }
+        // easy — всегда случайно
+      }
+
+      // Анимация "размышлений"
+      document.getElementById('message').textContent = '🔮 ИИ сосредоточен...';
+      setTimeout(() => {
+        if (!gameActive) return;
+        heaps[heapIdx] -= take;
+        createParticles(heapIdx, take);
+        playCrystalSound();
+        currentPlayer = 1;
+        renderGame();
+        document.getElementById('message').textContent = '';
+      }, 800);
+    }
+
+    // ====== ЭФФЕКТЫ ======
+    function createParticles(heapIdx, count) {
+      const heapEl = document.querySelectorAll('.heap')[heapIdx];
+      if (!heapEl) return;
+      const rect = heapEl.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + 20;
+
+      for (let i = 0; i < count * 3; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.textContent = '✧';
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        p.style.color = i % 3 === 0 ? '#ff00ff' : i % 3 === 1 ? '#00ffff' : '#ffff00';
+        document.getElementById('particles').appendChild(p);
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1 + Math.random() * 3;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed - 2; // вверх
+
+        let opacity = 1;
+        let posX = x, posY = y;
+        const anim = () => {
+          opacity -= 0.02;
+          posX += vx;
+          posY += vy;
+          vy += 0.1; // гравитация
+          p.style.opacity = opacity;
+          p.style.transform = `translate(${posX - x}px, ${posY - y}px)`;
+          if (opacity > 0) requestAnimationFrame(anim);
+          else p.remove();
+        };
+        requestAnimationFrame(anim);
+      }
+    }
+
+    function showWinEffect() {
+      const effect = document.getElementById('winEffect');
+      effect.innerHTML = '';
+      effect.style.opacity = '1';
+      effect.style.background = 'radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(138,43,226,0.6) 100%)';
+      setTimeout(() => {
+        effect.style.opacity = '0';
+      }, 1500);
+    }
+
+    // ====== СЛУШАТЕЛИ ======
     document.getElementById('heapSelect')?.addEventListener('change', updateTakeOptions);
+    document.getElementById('gameMode').addEventListener('change', () => {
+      document.getElementById('aiLevel').closest('.setup-item').style.display = 
+        document.getElementById('gameMode').value === 'ai' ? 'flex' : 'none';
+    });
   </script>
 </body>
 </html>
